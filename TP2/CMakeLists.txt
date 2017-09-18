@@ -8,7 +8,6 @@ set(SOURCE_FILES
         src/EchoProcessor.h
         src/LineProcessor.cpp
         src/LineProcessor.h
-        src/main.cpp
         src/test.cpp)
 
 add_executable(TP2 ${SOURCE_FILES})
