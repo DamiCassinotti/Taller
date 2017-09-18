@@ -10,9 +10,10 @@ private:
     FILE* file;
 public:
     File(const string path, const string flag);
-    File();
+    File(FILE* file);
     ~File();
-    string leerLinea();
+    string readLine();
+    void writeLine(string line);
     int onEof();
 };
 
