@@ -8,5 +8,4 @@ void EchoProcessor::run() {
     output = input;
 }
 
-EchoProcessor::~EchoProcessor() {
-}
+EchoProcessor::~EchoProcessor() { }
