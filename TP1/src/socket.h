@@ -10,7 +10,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-
 typedef struct {
     int sock;
     int peersock;
