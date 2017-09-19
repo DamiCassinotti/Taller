@@ -119,14 +119,14 @@ int sendNewLineMsg(socket_t* sock, int pos) {
 
 int readPrintMsgClient(socket_t* sock) {
     int res;
-    char msg_len_bytes[4];
-    res = recv_message(sock->sock, msg_len_bytes, 4);
+    char msg_len_bytes[sizeof(int)];
+    res = recv_message(sock, msg_len_bytes, sizeof(int));
     if (res <= 0)
         return -1;
     int kMsgLen = getIntFromBytes(msg_len_bytes);
 
     char msg[kMsgLen + 1];
-    res = recv_message(sock->sock, msg, kMsgLen);
+    res = recv_message(sock, msg, kMsgLen);
     if (res <= 0)
         return -1;
     msg[kMsgLen] = '\0';

@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-int recv_message(int skt, char *buf, int size);
+//int recv_message(int skt, char *buf, int size);
 
 int send_message(int skt, char *buf, int size);
 

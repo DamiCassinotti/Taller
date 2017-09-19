@@ -22,6 +22,8 @@ void socketAccept(socket_t *self, char* port);
 
 bool isConnected(socket_t *self);
 
+int recv_message(socket_t *self, char *buf, int size);
+
 void socketShutdown(socket_t* self);
 
 #endif //TP1_SOCKET_H

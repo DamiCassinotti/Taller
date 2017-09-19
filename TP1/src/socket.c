@@ -1,6 +1,7 @@
 #include "socket.h"
 
 void socketConnect(socket_t* self, char *host, char *port) {
+    self->peersock = 0;
     self->sock = 0;
     int sock = 0;
     struct addrinfo *result, *ptr;
@@ -85,4 +86,25 @@ bool isConnected(socket_t *self) {
 void socketShutdown(socket_t* self) {
     shutdown(self->sock, SHUT_RDWR);
     close(self->sock);
+    if (self->peersock != 0) {
+        shutdown(self->peersock, SHUT_RDWR);
+        close(self->peersock);
+    }
+}
+
+int recv_message(socket_t *self, char *buf, int size) {
+    int received = 0;
+    int s = 0;
+    bool is_the_socket_valid = true;
+
+    while (received < size && is_the_socket_valid) {
+        s = recv(self->sock, &buf[received], size - received, MSG_NOSIGNAL);
+        if (s <= 0) {
+            is_the_socket_valid = false;
+        } else {
+            received += s;
+        }
+    }
+
+    return s;
 }

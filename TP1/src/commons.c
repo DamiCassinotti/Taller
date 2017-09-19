@@ -1,6 +1,6 @@
 #include "commons.h"
 
-int recv_message(int skt, char *buf, int size) {
+/*int recv_message(int skt, char *buf, int size) {
     int received = 0;
     int s = 0;
     bool is_the_socket_valid = true;
@@ -15,7 +15,7 @@ int recv_message(int skt, char *buf, int size) {
     }
 
     return s;
-}
+}*/
 
 int send_message(int skt, char *buf, int size) {
     int sent = 0;
