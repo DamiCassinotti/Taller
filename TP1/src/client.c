@@ -51,9 +51,6 @@ int mainClient(int argc, char *argv[]) {
     }
     free(line);
     fclose(input);
-
-    shutdown(sock->sock, SHUT_RDWR);
-    close(sock->sock);
     free(sock);
     return 0;
 }

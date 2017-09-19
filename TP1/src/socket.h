@@ -13,10 +13,15 @@
 
 typedef struct {
     int sock;
+    int peersock;
 } socket_t;
 
-void socketConnect(socket_t *socket, char *host, char *port);
+void socketConnect(socket_t *self, char *host, char *port);
 
-bool isConnected(socket_t *socket);
+void socketAccept(socket_t *self, char* port);
+
+bool isConnected(socket_t *self);
+
+void socketShutdown(socket_t* self);
 
 #endif //TP1_SOCKET_H

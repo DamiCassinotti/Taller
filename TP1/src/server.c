@@ -4,7 +4,10 @@ int mainServer(int argc, char *argv[]) {
     if (argc != 3)
         return -1;
 
-    int s = 0, sock, peersock, len = 0;
+    char* port = argv[2];
+    socket_t* sock = malloc(sizeof(socket_t));
+    socketAccept(sock, port);
+    /*int s = 0, sock, peersock;
     bool continue_running = true;
 
     struct addrinfo hints;
@@ -44,36 +47,39 @@ int mainServer(int argc, char *argv[]) {
     peersock = accept(sock, NULL, NULL);
     if (peersock == -1) {
         continue_running = false;
-    }
+    }*/
 
+    bool continue_running = isConnected(sock);
+
+    int len = 0;
     rope_t *rope = malloc(sizeof(rope_t));
     ropeCreate(rope, "");
     while (continue_running) {
         char opcode_bytes[sizeof(int)];
         int res = 1;
-        len = recv_message(peersock, opcode_bytes, sizeof(int));
+        len = recv_message(sock->sock, opcode_bytes, sizeof(int));
         if (len <= 0) {
             continue_running = false;
         } else {
             int opcode = getIntFromBytes(opcode_bytes);
             if (opcode == 1) {
                 rope_t *rope2 = malloc(sizeof(rope_t));
-                res = readInsertMsg(peersock, rope, rope2);
+                res = readInsertMsg(sock, rope, rope2);
                 rope = rope2;
             } else if (opcode == 2) {
                 rope_t *rope2 = malloc(sizeof(rope_t));
-                res = readDeleteMsg(peersock, rope, rope2);
+                res = readDeleteMsg(sock, rope, rope2);
                 rope = rope2;
             } else if (opcode == 3) {
                 rope_t *rope2 = malloc(sizeof(rope_t));
-                res = readSpaceMsg(peersock, rope, rope2);
+                res = readSpaceMsg(sock, rope, rope2);
                 rope = rope2;
             } else if (opcode == 4) {
                 rope_t *rope2 = malloc(sizeof(rope_t));
-                res = readNewlineMsg(peersock, rope, rope2);
+                res = readNewlineMsg(sock, rope, rope2);
                 rope = rope2;
             } else if (opcode == 5) {
-                res = sendPrintMsg(peersock, rope);
+                res = sendPrintMsg(sock, rope);
             } else {
                 continue_running = false;
             }
@@ -83,25 +89,25 @@ int mainServer(int argc, char *argv[]) {
         }
     }
     ropeDestroy(rope);
-    shutdown(peersock, SHUT_RDWR);
-    close(peersock);
+    shutdown(sock->sock, SHUT_RDWR);
+    close(sock->sock);
 
-    shutdown(sock, SHUT_RDWR);
-    close(sock);
+    shutdown(sock->peersock, SHUT_RDWR);
+    close(sock->peersock);
 
     return 0;
 }
 
-int readDeleteMsg(int peersock, rope_t *rope, rope_t *rope2) {
+int readDeleteMsg(socket_t *peersock, rope_t *rope, rope_t *rope2) {
     int res;
     char ini_bytes[4];
-    res = recv_message(peersock, ini_bytes, sizeof(int));
+    res = recv_message(peersock->sock, ini_bytes, sizeof(int));
     if (res <= 0)
         return -1;
     int ini = getIntFromBytes(ini_bytes);
 
     char fin_bytes[4];
-    res = recv_message(peersock, fin_bytes, sizeof(int));
+    res = recv_message(peersock->sock, fin_bytes, sizeof(int));
     if (res <= 0)
         return -1;
     int fin = getIntFromBytes(fin_bytes);
@@ -110,10 +116,10 @@ int readDeleteMsg(int peersock, rope_t *rope, rope_t *rope2) {
     return 1;
 }
 
-int readSpaceMsg(int peersock, rope_t *rope, rope_t *rope2) {
+int readSpaceMsg(socket_t *peersock, rope_t *rope, rope_t *rope2) {
     int res;
     char pos_bytes[4];
-    res = recv_message(peersock, pos_bytes, sizeof(int));
+    res = recv_message(peersock->sock, pos_bytes, sizeof(int));
     if (res <= 0)
         return -1;
     int pos = getIntFromBytes(pos_bytes);
@@ -122,10 +128,10 @@ int readSpaceMsg(int peersock, rope_t *rope, rope_t *rope2) {
     return 1;
 }
 
-int readNewlineMsg(int peersock, rope_t *rope, rope_t *rope2) {
+int readNewlineMsg(socket_t *peersock, rope_t *rope, rope_t *rope2) {
     int res;
     char pos_bytes[4];
-    res = recv_message(peersock, pos_bytes, sizeof(int));
+    res = recv_message(peersock->sock, pos_bytes, sizeof(int));
     if (res <= 0)
         return -1;
     int pos = getIntFromBytes(pos_bytes);
@@ -134,37 +140,37 @@ int readNewlineMsg(int peersock, rope_t *rope, rope_t *rope2) {
     return 1;
 }
 
-int sendPrintMsg(int peersock, rope_t *rope) {
+int sendPrintMsg(socket_t *peersock, rope_t *rope) {
     int msg_len = getLongitud(rope);
     char *cadena = getString(rope);
 
     char *len_bytes = (char *) &msg_len;
-    int res = send_message(peersock, len_bytes, sizeof(int));
+    int res = send_message(peersock->sock, len_bytes, sizeof(int));
     if (res <= 0)
         return -1;
-    res = send_message(peersock, cadena, msg_len);
+    res = send_message(peersock->sock, cadena, msg_len);
     free(cadena);
     if (res <= 0)
         return -1;
     return 1;
 }
 
-int readInsertMsg(int peersock, rope_t *rope, rope_t *rope2) {
+int readInsertMsg(socket_t *peersock, rope_t *rope, rope_t *rope2) {
     int res;
     char pos_bytes[sizeof(int)];
-    res = recv_message(peersock, pos_bytes, sizeof(int));
+    res = recv_message(peersock->sock, pos_bytes, sizeof(int));
     if (res <= 0)
         return -1;
     int pos = getIntFromBytes(pos_bytes);
 
     char len_bytes[sizeof(short)];
-    res = recv_message(peersock, len_bytes, sizeof(short));
+    res = recv_message(peersock->sock, len_bytes, sizeof(short));
     if (res <= 0)
         return -1;
     const int kLen = getShortFromBytes(len_bytes);
 
     char mensaje[kLen + 1];
-    res = recv_message(peersock, mensaje, kLen);
+    res = recv_message(peersock->sock, mensaje, kLen);
     if (res <= 0)
         return -1;
     mensaje[kLen] = '\0';
