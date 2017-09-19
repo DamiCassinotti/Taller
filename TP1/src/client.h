@@ -11,19 +11,20 @@
 #include <sys/socket.h>
 #include "commons.h"
 #include "lectura.h"
+#include "socket.h"
 
 int mainClient(int argc, char *argv[]);
 
-int sendInsertMsg(int sock, int pos, char *mensaje);
+int sendInsertMsg(socket_t* sock, int pos, char *mensaje);
 
-int sendDeleteMsg(int sock, int ini, int fin);
+int sendDeleteMsg(socket_t* sock, int ini, int fin);
 
-int sendSpaceMsg(int sock, int pos);
+int sendSpaceMsg(socket_t* sock, int pos);
 
-int sendNewLineMsg(int sock, int pos);
+int sendNewLineMsg(socket_t* sock, int pos);
 
-int readPrintMsgClient(int sock);
+int readPrintMsgClient(socket_t* sock);
 
-int sendPrintMsgClient(int sock);
+int sendPrintMsgClient(socket_t* sock);
 
 #endif //TP1_CLIENT_H
