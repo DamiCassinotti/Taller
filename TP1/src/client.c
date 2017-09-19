@@ -58,22 +58,22 @@ int mainClient(int argc, char *argv[]) {
 int sendInsertMsg(socket_t* sock, int pos, char *mensaje) {
     int res, opcode = 1;
     char *opcode_bytes = (char *) &opcode;
-    res = send_message(sock->sock, opcode_bytes, sizeof(int));
+    res = send_message(sock, opcode_bytes, sizeof(int));
     if (res <= 0)
         return -1;
 
     char *pos_bytes = (char *) &pos;
-    res = send_message(sock->sock, pos_bytes, sizeof(int));
+    res = send_message(sock, pos_bytes, sizeof(int));
     if (res <= 0)
         return -1;
 
     short len = strlen(mensaje);
     char *len_bytes = (char *) &len;
-    res = send_message(sock->sock, len_bytes, sizeof(short));
+    res = send_message(sock, len_bytes, sizeof(short));
     if (res <= 0)
         return -1;
 
-    res = send_message(sock->sock, mensaje, strlen(mensaje));
+    res = send_message(sock, mensaje, strlen(mensaje));
     if (res <= 0)
         return -1;
     return 1;
@@ -82,39 +82,39 @@ int sendInsertMsg(socket_t* sock, int pos, char *mensaje) {
 int sendDeleteMsg(socket_t* sock, int ini, int fin) {
     int opcode = 2;
     char *opcode_bytes = (char *) &opcode;
-    int res = send_message(sock->sock, opcode_bytes, sizeof(int));
+    int res = send_message(sock, opcode_bytes, sizeof(int));
     if (res <= 0)
         return -1;
 
     char *ini_bytes = (char *) &ini;
-    res = send_message(sock->sock, ini_bytes, sizeof(int));
+    res = send_message(sock, ini_bytes, sizeof(int));
     if (res <= 0)
         return -1;
 
     char *fin_bytes = (char *) &fin;
-    return send_message(sock->sock, fin_bytes, sizeof(int));
+    return send_message(sock, fin_bytes, sizeof(int));
 }
 
 int sendSpaceMsg(socket_t* sock, int pos) {
     int opcode = 3;
     char *opcode_bytes = (char *) &opcode;
-    int res = send_message(sock->sock, opcode_bytes, sizeof(int));
+    int res = send_message(sock, opcode_bytes, sizeof(int));
     if (res <= 0)
         return -1;
 
     char *pos_bytes = (char *) &pos;
-    return send_message(sock->sock, pos_bytes, sizeof(int));
+    return send_message(sock, pos_bytes, sizeof(int));
 }
 
 int sendNewLineMsg(socket_t* sock, int pos) {
     int opcode = 4;
     char *opcode_bytes = (char *) &opcode;
-    int res = send_message(sock->sock, opcode_bytes, sizeof(int));
+    int res = send_message(sock, opcode_bytes, sizeof(int));
     if (res <= 0)
         return -1;
 
     char *pos_bytes = (char *) &pos;
-    return send_message(sock->sock, pos_bytes, sizeof(int));
+    return send_message(sock, pos_bytes, sizeof(int));
 }
 
 int readPrintMsgClient(socket_t* sock) {
@@ -134,8 +134,8 @@ int readPrintMsgClient(socket_t* sock) {
     return 1;
 }
 
-int sendPrintMsgClient(socket_t* socket) {
+int sendPrintMsgClient(socket_t* sock) {
     int opcode = 5;
     char *opcode_bytes = (char *) &opcode;
-    return send_message(socket->sock, opcode_bytes, sizeof(int));
+    return send_message(sock, opcode_bytes, sizeof(int));
 }

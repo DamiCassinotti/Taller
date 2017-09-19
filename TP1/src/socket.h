@@ -18,12 +18,14 @@ typedef struct {
 
 void socketConnect(socket_t *self, char *host, char *port);
 
-void socketAccept(socket_t *self, char* port);
+void socketAccept(socket_t *self, char *port);
 
 bool isConnected(socket_t *self);
 
+void socketShutdown(socket_t *self);
+
 int recv_message(socket_t *self, char *buf, int size);
 
-void socketShutdown(socket_t* self);
+int send_message(socket_t *skt, char *buf, int size);
 
 #endif //TP1_SOCKET_H

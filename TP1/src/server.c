@@ -100,10 +100,10 @@ int sendPrintMsg(socket_t *sock, rope_t *rope) {
     char *cadena = getString(rope);
 
     char *len_bytes = (char *) &msg_len;
-    int res = send_message(sock->sock, len_bytes, sizeof(int));
+    int res = send_message(sock, len_bytes, sizeof(int));
     if (res <= 0)
         return -1;
-    res = send_message(sock->sock, cadena, msg_len);
+    res = send_message(sock, cadena, msg_len);
     free(cadena);
     if (res <= 0)
         return -1;
