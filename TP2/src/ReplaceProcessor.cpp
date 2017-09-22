@@ -1,4 +1,5 @@
 #include "ReplaceProcessor.h"
+#include <iostream>
 
 ReplaceProcessor::ReplaceProcessor(string &input, string &output, regex rgx, string replacement) : LineProcessor(input, output) {
     this->rgx = rgx;
@@ -7,6 +8,7 @@ ReplaceProcessor::ReplaceProcessor(string &input, string &output, regex rgx, str
 
 void ReplaceProcessor::run() {
     output = regex_replace(input, rgx, replacement);
+    std::cout << "Replace: " << input << "->" << output << "\n";
 }
 
 ReplaceProcessor::~ReplaceProcessor() {}

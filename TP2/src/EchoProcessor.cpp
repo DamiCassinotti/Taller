@@ -6,6 +6,7 @@ EchoProcessor::EchoProcessor(std::string &input, std::string &output) : LineProc
 
 void EchoProcessor::run() {
     output = input;
+    std::cout << "Echo: " << input << "->" << output << "\n";
 }
 
 EchoProcessor::~EchoProcessor() { }

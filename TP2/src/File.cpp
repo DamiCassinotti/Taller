@@ -29,3 +29,7 @@ void File::writeLine(string line) {
 int File::onEof() {
     return feof(this->file);
 }
+
+File File::operator=(File file){
+    return file;
+}

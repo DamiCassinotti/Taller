@@ -15,6 +15,7 @@ public:
     string readLine();
     void writeLine(string line);
     int onEof();
+    File operator=(File file);
 };
 
 #endif //TP2_FILE_H
