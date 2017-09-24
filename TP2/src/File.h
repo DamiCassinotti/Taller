@@ -3,19 +3,20 @@
 
 #include <stdio.h>
 #include <string>
+
 using namespace std;
 
 class File {
 private:
-    FILE* file;
+    FILE *file;
 public:
-    File(const string path, const string flag);
-    File(FILE* file);
+    File(const char* path, const char* flag);
+    File(FILE *file);
     ~File();
     string readLine();
     void writeLine(string line);
     int onEof();
-    File operator=(File file);
+    void changeFile(const char* path, const char* flag);
 };
 
 #endif //TP2_FILE_H

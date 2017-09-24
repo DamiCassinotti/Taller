@@ -1,12 +1,14 @@
 #include "File.h"
 #define FIN_LINEA '\n'
 
+#include <iostream>
+
 File::File(FILE* file) {
     this->file = file;
 }
 
-File::File(const string path, const string flag) {
-    this->file = fopen(path.c_str(), flag.c_str());
+File::File(const char* path, const char* flag) {
+    this->file = fopen(path, flag);
 }
 
 File::~File() {
@@ -30,6 +32,7 @@ int File::onEof() {
     return feof(this->file);
 }
 
-File File::operator=(File file){
-    return file;
+void File::changeFile(const char* path, const char* flag) {
+    //fclose(this->file);
+    this->file = fopen(path, flag);
 }

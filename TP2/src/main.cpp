@@ -20,9 +20,9 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         string param(argv[i]);
         if (param == "--input") {
-            input = File(argv[i + 1], "r");
+            input.changeFile(argv[i + 1], "r");
         } else if (param == "--output") {
-            output = File(argv[i + 1], "w");
+            output.changeFile(argv[i + 1], "w");
         } else if (param == "echo") {
             LineProcessor* echo = new EchoProcessor(*input_str, *output_str);
             processors.append(echo);
@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     }
     input_inicial = input.readLine();
     while (input.onEof() == 0) {
+        cout << input_inicial << "\n";
         for (LineProcessor* processor : processors) {
             processor->run();
         }
