@@ -9,55 +9,65 @@
 
 using namespace std;
 
+#define INPUT_NAME "--input"
+#define OUTPUT_NAME "--output"
+#define DEBUG_NAME "--debug"
+#define ECHO_NAME "echo"
+#define MATCH_NAME "match"
+#define REPLACE_NAME "replace"
+
 int main(int argc, char *argv[]) {
     File input(stdin);
     File output(stdout);
     Processors processors;
-    string input_inicial;
-    string* input_str = &input_inicial;
-    string output_inicial;
-    string* output_str = &output_inicial;
+    list<string> inputs;
+    inputs.emplace_back();
     for (int i = 1; i < argc; i++) {
         string param(argv[i]);
-        if (param == "--input") {
+        if (param == INPUT_NAME) {
             input.changeFile(argv[i + 1], "r");
-        } else if (param == "--output") {
+        } else if (param == OUTPUT_NAME) {
             output.changeFile(argv[i + 1], "w");
-        } else if (param == "echo") {
-            string echoname("echo");
-            LineProcessor* echo = new EchoProcessor(echoname, *input_str, *output_str);
+        } else if (param == DEBUG_NAME) {
+
+        } else if (param == ECHO_NAME) {
+            string echoname(ECHO_NAME);
+            string& last_input = inputs.back();
+            inputs.emplace_back();
+            LineProcessor* echo = new EchoProcessor(echoname, last_input, inputs.back());
             processors.append(echo);
             if (i + 1 < argc && string(argv[i + 1]) != "::")
                 return 0;
-        } else if (param == "match") {
-            string matchName("echo");
+        } else if (param == MATCH_NAME) {
+            string matchName(MATCH_NAME);
             regex reg(argv[i + 1]);
-            LineProcessor* match = new MatchProcessor(matchName, *input_str, *output_str, reg);
+            string& last_input = inputs.back();
+            inputs.emplace_back();
+            LineProcessor* match = new MatchProcessor(matchName, last_input, inputs.back(), reg);
             processors.append(match);
             if (i + 2 < argc && string(argv[i + 2]) != "::")
                 return 0;
-        } else if (param == "replace") {
-            string replaceName("replace");
+        } else if (param == REPLACE_NAME) {
+            string replaceName(REPLACE_NAME);
             regex reg(argv[i + 1]);
             string replacement(argv[i + 2]);
-            LineProcessor* replace = new ReplaceProcessor(replaceName, *input_str, *output_str, reg, replacement);
+            string& last_input = inputs.back();
+            inputs.emplace_back();
+            LineProcessor* replace = new ReplaceProcessor(replaceName, last_input, inputs.back(), reg, replacement);
             processors.append(replace);
             if (i + 3 < argc && string(argv[i + 3]) != "::") {
                 return 0;
             }
         }
-        string siguiente_output;
-        input_str = output_str;
-        *output_str = siguiente_output;
     }
-    input_inicial = input.readLine();
+    inputs.front() = input.readLine();
     while (input.onEof() == 0) {
-        cout << input_inicial << "\n";
+        cout << inputs.front() << "\n";
         for (LineProcessor* processor : processors) {
             processor->run();
         }
-        output.writeLine(processors.back()->getOutput());
-        input_inicial = input.readLine();
+        output.writeLine(inputs.back());
+        inputs.front() = input.readLine();
     }
     return 0;
 }
