@@ -6,7 +6,7 @@
 class EchoProcessor: public LineProcessor {
 
 public:
-    EchoProcessor(std::string &input, std::string &output);
+    EchoProcessor(std::string name, std::string &input, std::string &output);
     void run() override;
     ~EchoProcessor();
 };

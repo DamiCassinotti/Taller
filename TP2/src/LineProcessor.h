@@ -7,12 +7,14 @@
 class LineProcessor {
 
 protected:
+    std::string name;
     std::string &input;
     std::string &output;
 
 public:
-    LineProcessor(std::string &input, std::string &output);
+    LineProcessor(std::string name, std::string &input, std::string &output);
     virtual void run() = 0;
+    std::string getName();
     std::string getOutput();
     virtual ~LineProcessor();
 };

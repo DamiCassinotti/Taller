@@ -10,7 +10,7 @@ private:
     regex rgx;
     string replacement;
 public:
-    ReplaceProcessor(string &input, string &output, regex rgx, string replacement);
+    ReplaceProcessor(string name, string &input, string &output, regex rgx, string replacement);
     void run() override;
     ~ReplaceProcessor();
 };

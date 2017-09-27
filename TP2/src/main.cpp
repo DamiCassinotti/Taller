@@ -24,17 +24,27 @@ int main(int argc, char *argv[]) {
         } else if (param == "--output") {
             output.changeFile(argv[i + 1], "w");
         } else if (param == "echo") {
-            LineProcessor* echo = new EchoProcessor(*input_str, *output_str);
+            string echoname("echo");
+            LineProcessor* echo = new EchoProcessor(echoname, *input_str, *output_str);
             processors.append(echo);
+            if (i + 1 < argc && string(argv[i + 1]) != "::")
+                return 0;
         } else if (param == "match") {
+            string matchName("echo");
             regex reg(argv[i + 1]);
-            LineProcessor* match = new MatchProcessor(*input_str, *output_str, reg);
+            LineProcessor* match = new MatchProcessor(matchName, *input_str, *output_str, reg);
             processors.append(match);
+            if (i + 2 < argc && string(argv[i + 2]) != "::")
+                return 0;
         } else if (param == "replace") {
+            string replaceName("replace");
             regex reg(argv[i + 1]);
             string replacement(argv[i + 2]);
-            LineProcessor* replace = new ReplaceProcessor(*input_str, *output_str, reg, replacement);
+            LineProcessor* replace = new ReplaceProcessor(replaceName, *input_str, *output_str, reg, replacement);
             processors.append(replace);
+            if (i + 3 < argc && string(argv[i + 3]) != "::") {
+                return 0;
+            }
         }
         string siguiente_output;
         input_str = output_str;

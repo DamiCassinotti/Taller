@@ -33,6 +33,6 @@ int File::onEof() {
 }
 
 void File::changeFile(const char* path, const char* flag) {
-    //fclose(this->file);
+    fclose(this->file);
     this->file = fopen(path, flag);
 }

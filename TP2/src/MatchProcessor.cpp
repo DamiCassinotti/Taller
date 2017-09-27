@@ -1,7 +1,7 @@
 #include "MatchProcessor.h"
 #include <iostream>
 
-MatchProcessor::MatchProcessor(string &input, string &output, regex rgx) : LineProcessor(input, output) {
+MatchProcessor::MatchProcessor(string name, string &input, string &output, regex rgx) : LineProcessor(name, input, output) {
     this->rgx = rgx;
 }
 

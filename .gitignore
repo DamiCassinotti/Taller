@@ -2,3 +2,9 @@
 TP2/\.idea/
 
 *.o
+
+TP2/cmake-build-debug/
+
+TP1/\.idea/
+
+TP2/src/tp

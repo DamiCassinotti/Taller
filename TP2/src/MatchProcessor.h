@@ -9,7 +9,7 @@ class MatchProcessor : public LineProcessor {
 private:
     regex rgx;
 public:
-    MatchProcessor(string &input, string &output, regex rgx);
+    MatchProcessor(string name, string &input, string &output, regex rgx);
     void run() override;
     ~MatchProcessor();
 };
