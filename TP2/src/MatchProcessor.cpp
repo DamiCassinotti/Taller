@@ -10,7 +10,6 @@ void MatchProcessor::run() {
         output = input;
     else
         output = string("");
-    std::cout << "Match: " << input << "->" << output << "\n";
 }
 
 MatchProcessor::~MatchProcessor() {}

@@ -6,7 +6,6 @@ EchoProcessor::EchoProcessor(std::string name, std::string &input, std::string &
 
 void EchoProcessor::run() {
     output = input;
-    std::cout << "Echo: " << input << "->" << output << "\n";
 }
 
 EchoProcessor::~EchoProcessor() { }

@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
     Processors processors;
     list<string> inputs;
     inputs.emplace_back();
+    map<string, int> processors_type_count = {{ECHO_NAME, 0}, {MATCH_NAME, 0}, {REPLACE_NAME, 0}};
     for (int i = 1; i < argc; i++) {
         string param(argv[i]);
         if (param == INPUT_NAME) {
@@ -31,7 +32,8 @@ int main(int argc, char *argv[]) {
         } else if (param == DEBUG_NAME) {
 
         } else if (param == ECHO_NAME) {
-            string echoname(ECHO_NAME);
+            processors_type_count[ECHO_NAME]++;
+            string echoname(ECHO_NAME + std::to_string(processors_type_count[ECHO_NAME]));
             string& last_input = inputs.back();
             inputs.emplace_back();
             LineProcessor* echo = new EchoProcessor(echoname, last_input, inputs.back());
@@ -39,7 +41,8 @@ int main(int argc, char *argv[]) {
             if (i + 1 < argc && string(argv[i + 1]) != "::")
                 return 0;
         } else if (param == MATCH_NAME) {
-            string matchName(MATCH_NAME);
+            processors_type_count[MATCH_NAME]++;
+            string matchName(MATCH_NAME + std::to_string(processors_type_count[MATCH_NAME]));
             regex reg(argv[i + 1]);
             string& last_input = inputs.back();
             inputs.emplace_back();
@@ -48,7 +51,8 @@ int main(int argc, char *argv[]) {
             if (i + 2 < argc && string(argv[i + 2]) != "::")
                 return 0;
         } else if (param == REPLACE_NAME) {
-            string replaceName(REPLACE_NAME);
+            processors_type_count[REPLACE_NAME]++;
+            string replaceName(REPLACE_NAME + std::to_string(processors_type_count[REPLACE_NAME]));
             regex reg(argv[i + 1]);
             string replacement(argv[i + 2]);
             string& last_input = inputs.back();
@@ -62,7 +66,6 @@ int main(int argc, char *argv[]) {
     }
     inputs.front() = input.readLine();
     while (input.onEof() == 0) {
-        cout << inputs.front() << "\n";
         for (LineProcessor* processor : processors) {
             processor->run();
         }

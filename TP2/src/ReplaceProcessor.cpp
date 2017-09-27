@@ -8,7 +8,6 @@ ReplaceProcessor::ReplaceProcessor(string name, string &input, string &output, r
 
 void ReplaceProcessor::run() {
     output = regex_replace(input, rgx, replacement);
-    std::cout << "Replace: " << input << "->" << output << "\n";
 }
 
 ReplaceProcessor::~ReplaceProcessor() {}
