@@ -2,15 +2,16 @@
 #define TP2_REPLACEPROCESSOR_H
 
 #include <regex>
+#include <string>
 #include "LineProcessor.h"
-using namespace std;
 
 class ReplaceProcessor : public LineProcessor {
 private:
-    regex rgx;
-    string replacement;
+    std::regex rgx;
+    std::string replacement;
 public:
-    ReplaceProcessor(string name, string &input, string &output, regex rgx, string replacement);
+    ReplaceProcessor(std::string name, std::string &input, std::string &output,
+                     std::regex rgx, std::string replacement, Logger &logger);
     void run() override;
     ~ReplaceProcessor();
 };

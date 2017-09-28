@@ -4,17 +4,15 @@
 #include <stdio.h>
 #include <string>
 
-using namespace std;
-
 class File {
 private:
     FILE *file;
 public:
     File(const char* path, const char* flag);
-    File(FILE *file);
+    explicit File(FILE *file);
     ~File();
-    string readLine();
-    void writeLine(string line);
+    std::string readLine();
+    void writeLine(std::string line);
     int onEof();
     void changeFile(const char* path, const char* flag);
 };

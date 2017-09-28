@@ -2,14 +2,16 @@
 #define TP2_MATCHPROCESSOR_H
 
 #include <regex>
+#include <string>
 #include "LineProcessor.h"
-using namespace std;
 
 class MatchProcessor : public LineProcessor {
 private:
-    regex rgx;
+    std::regex rgx;
+    void filteredLog();
 public:
-    MatchProcessor(string name, string &input, string &output, regex rgx);
+    MatchProcessor(std::string name, std::string &input, std::string &output,
+                   std::regex rgx, Logger &logger);
     void run() override;
     ~MatchProcessor();
 };

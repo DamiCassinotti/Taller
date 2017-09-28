@@ -1,7 +1,10 @@
 #include "LineProcessor.h"
-#include <iostream>
+#include <string>
 
-LineProcessor::LineProcessor(std::string name, std::string &input, std::string &output) : name(name), input(input), output(output) {
+LineProcessor::LineProcessor(std::string name, std::string &input,
+                             std::string &output, Logger &logger) :
+        name(name), input(input), output(output), logger(logger) {
+    logger.addProcessor(name);
 }
 
 std::string LineProcessor::getOutput() {
@@ -12,5 +15,9 @@ std::string LineProcessor::getName() {
     return name;
 }
 
-LineProcessor::~LineProcessor() { }
+void LineProcessor::normalLog() {
+    if (input != "")
+        logger.log(name, input + " -> " + output);
+}
 
+LineProcessor::~LineProcessor() { }

@@ -3,17 +3,16 @@
 
 #include <list>
 #include "LineProcessor.h"
-using namespace std;
 
 class Processors {
 private:
-    list<LineProcessor*> processors;
+    std::list<LineProcessor*> processors;
 public:
     Processors();
     void append(LineProcessor* processor);
     LineProcessor* back();
-    list<LineProcessor*>::iterator begin();
-    list<LineProcessor*>::iterator end();
+    std::list<LineProcessor*>::iterator begin();
+    std::list<LineProcessor*>::iterator end();
     ~Processors();
 };
 
