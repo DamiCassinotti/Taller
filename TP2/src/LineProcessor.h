@@ -3,9 +3,10 @@
 
 #include <stdbool.h>
 #include <string>
+#include "Thread.h"
 #include "Logger.h"
 
-class LineProcessor {
+class LineProcessor : public Thread {
 protected:
     std::string name;
     std::string &input;
@@ -16,8 +17,6 @@ public:
     LineProcessor(std::string name, std::string &input,
                   std::string &output, Logger &logger);
     virtual void run() = 0;
-    std::string getName();
-    std::string getOutput();
     virtual ~LineProcessor();
 };
 

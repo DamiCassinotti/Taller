@@ -7,14 +7,6 @@ LineProcessor::LineProcessor(std::string name, std::string &input,
     logger.addProcessor(name);
 }
 
-std::string LineProcessor::getOutput() {
-    return output;
-}
-
-std::string LineProcessor::getName() {
-    return name;
-}
-
 void LineProcessor::normalLog() {
     if (input != "")
         logger.log(name, input + " -> " + output);

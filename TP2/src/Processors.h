@@ -6,13 +6,14 @@
 
 class Processors {
 private:
-    std::list<LineProcessor*> processors;
+    std::list<Thread*> processors;
 public:
     Processors();
-    void append(LineProcessor* processor);
-    LineProcessor* back();
-    std::list<LineProcessor*>::iterator begin();
-    std::list<LineProcessor*>::iterator end();
+    void append(Thread* processor);
+    Thread* back();
+    std::list<Thread*>::iterator begin();
+    std::list<Thread*>::iterator end();
+    void join();
     ~Processors();
 };
 

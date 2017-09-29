@@ -3,24 +3,31 @@
 
 Processors::Processors() {}
 
-void Processors::append(LineProcessor *processor) {
+void Processors::append(Thread *processor) {
     this->processors.push_back(processor);
 }
 
-LineProcessor* Processors::back() {
+Thread* Processors::back() {
     return this->processors.back();
 }
 
-std::list<LineProcessor*>::iterator Processors::begin() {
+std::list<Thread*>::iterator Processors::begin() {
     return this->processors.begin();
 }
 
-std::list<LineProcessor*>::iterator Processors::end() {
+std::list<Thread*>::iterator Processors::end() {
     return this->processors.end();
 }
 
 Processors::~Processors() {
-    for (LineProcessor* processor : this->processors) {
-        delete processor;
+    //for (Thread* processor : this->processors) {
+    //    delete processor;
+    //}
+}
+
+void Processors::join() {
+    for (Thread* thread : processors) {
+        thread->join();
+        delete thread;
     }
 }

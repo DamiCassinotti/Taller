@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <list>
+#include <unistd.h>
 #include "File.h"
 #include "LineProcessor.h"
 #include "EchoProcessor.h"
@@ -50,8 +51,9 @@ int main(int argc, char *argv[]) {
                          std::to_string(processors_type_count[ECHO_NAME]));
             std::string& last_input = inputs.back();
             inputs.emplace_back();
-            LineProcessor* echo = new EchoProcessor(echoname, last_input,
+            Thread* echo = new EchoProcessor(echoname, last_input,
                                                     inputs.back(), logger);
+            echo->start();
             processors.append(echo);
             if (i + 1 < argc && std::string(argv[i + 1]) != "::")
                 return ERROR;
@@ -62,8 +64,9 @@ int main(int argc, char *argv[]) {
             std::regex reg(argv[i + 1]);
             std::string& last_input = inputs.back();
             inputs.emplace_back();
-            LineProcessor* match = new MatchProcessor(matchName, last_input,
+            Thread* match = new MatchProcessor(matchName, last_input,
                                                   inputs.back(), reg, logger);
+            match->start();
             processors.append(match);
             if (i + 2 < argc && std::string(argv[i + 2]) != "::")
                 return ERROR;
@@ -75,24 +78,34 @@ int main(int argc, char *argv[]) {
             std::string replacement(argv[i + 2]);
             std::string& last_input = inputs.back();
             inputs.emplace_back();
-            LineProcessor* replace = new ReplaceProcessor(replaceName,
+            Thread* replace = new ReplaceProcessor(replaceName,
                           last_input, inputs.back(), reg, replacement, logger);
+            replace->start();
             processors.append(replace);
             if (i + 3 < argc && std::string(argv[i + 3]) != "::") {
                 return ERROR;
             }
         }
     }
+    //for (Thread* thread : processors) {
+    //    thread->join();
+    //    delete thread;
+    //}
     inputs.front() = input.readLine();
     while (input.onEof() == 0) {
-        for (LineProcessor* processor : processors) {
-            processor->run();
-        }
-        if (inputs.back() != "")
+
+        //for (LineProcessor* processor : processors) {
+        //    processor->run();
+        //}
+        if (inputs.back() != "") {
             output.writeLine(inputs.back());
+        }
+        sleep(10);
         inputs.front() = input.readLine();
     }
-    if (should_log)
+    processors.join();
+    if (should_log) {
         logger.finnishLogging();
+    }
     return OK;
 }
