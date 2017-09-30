@@ -3,10 +3,11 @@
 
 #include <string>
 #include "LineProcessor.h"
+#include "BlockingString.h"
 
 class EchoProcessor: public LineProcessor {
 public:
-    EchoProcessor(std::string name, std::string &input, std::string &output,
+    EchoProcessor(std::string name, BlockingString &input, BlockingString &output,
                   Logger &logger);
     void run() override;
     ~EchoProcessor();

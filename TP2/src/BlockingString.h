@@ -5,7 +5,6 @@
 #include <condition_variable>
 #include <string>
 
-
 class BlockingString {
 private:
     std::mutex mtx;

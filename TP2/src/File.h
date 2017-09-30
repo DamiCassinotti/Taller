@@ -13,7 +13,7 @@ public:
     ~File();
     std::string readLine();
     void writeLine(std::string line);
-    int onEof();
+    bool onEof();
     void changeFile(const char* path, const char* flag);
 };
 

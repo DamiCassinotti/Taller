@@ -5,17 +5,18 @@
 #include <string>
 #include "Thread.h"
 #include "Logger.h"
+#include "BlockingString.h"
 
 class LineProcessor : public Thread {
 protected:
     std::string name;
-    std::string &input;
-    std::string &output;
+    BlockingString &input;
+    BlockingString &output;
     Logger &logger;
     void normalLog();
 public:
-    LineProcessor(std::string name, std::string &input,
-                  std::string &output, Logger &logger);
+    LineProcessor(std::string name, BlockingString &input,
+                  BlockingString &output, Logger &logger);
     virtual void run() = 0;
     virtual ~LineProcessor();
 };

@@ -1,4 +1,5 @@
 #include "BlockingString.h"
+#include <iostream>
 
 BlockingString::BlockingString() {}
 
@@ -13,8 +14,9 @@ void BlockingString::insert(std::string new_input) {
 
 std::string BlockingString::getString() {
     std::unique_lock<std::mutex> lock(mtx);
-    output_ready.wait(lock);
+    output_ready.wait(lock, [=]{return input != "";});
     std::string input_cpy(input);
+    input = std::string();
     input_ready.notify_all();
     return input_cpy;
 }

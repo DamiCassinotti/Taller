@@ -2,14 +2,18 @@
 #include <string>
 #include "EchoProcessor.h"
 
-EchoProcessor::EchoProcessor(std::string name, std::string &input,
-                             std::string &output, Logger &logger) :
+EchoProcessor::EchoProcessor(std::string name, BlockingString &input,
+                             BlockingString &output, Logger &logger) :
         LineProcessor(name, input, output, logger) {
 }
 
 void EchoProcessor::run() {
-    output = input;
-    normalLog();
+    std::string input_content = input.getString();
+    while (input_content != "\n\n") {
+        output.insert(input_content);
+        input_content = input.getString();
+    }
+    output.insert(input_content);
 }
 
 EchoProcessor::~EchoProcessor() { }

@@ -2,19 +2,30 @@
 #define TP2_PROCESSORS_H
 
 #include <list>
-#include "LineProcessor.h"
+#include "EchoProcessor.h"
+#include "MatchProcessor.h"
+#include "ReplaceProcessor.h"
+#include "Reader.h"
+#include "Writer.h"
 
-class Processors {
+class Threads {
 private:
-    std::list<Thread*> processors;
+    std::list<Thread*> threads;
 public:
-    Processors();
+    Threads();
+    void addEchoThread(std::string name, BlockingString &input,
+                       BlockingString &output, Logger &logger);
+    void addMatchThread(std::string name, BlockingString &input,
+                       BlockingString &output, std::regex rgx, Logger &logger);
+    void addReplaceThread(std::string name, BlockingString &input,
+                          BlockingString &output, std::regex rgx, std::string
+                          replacement, Logger &logger);
+    void addReaderThread(File &file, BlockingString &input);
+    void addWriterThread(File &file, BlockingString &input);
     void append(Thread* processor);
-    Thread* back();
-    std::list<Thread*>::iterator begin();
-    std::list<Thread*>::iterator end();
+    void start();
     void join();
-    ~Processors();
+    ~Threads();
 };
 
 #endif //TP2_PROCESSORS_H

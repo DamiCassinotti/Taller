@@ -11,6 +11,9 @@
 #include "MatchProcessor.h"
 #include "ReplaceProcessor.h"
 #include "Processors.h"
+#include "BlockingString.h"
+#include "Reader.h"
+#include "Writer.h"
 
 #define INPUT_NAME "--input"
 #define OUTPUT_NAME "--output"
@@ -26,8 +29,8 @@ int main(int argc, char *argv[]) {
         return ERROR;
     File input(stdin);
     File output(stdout);
-    Processors processors;
-    std::list<std::string> inputs;
+    Threads threads;
+    std::list<BlockingString> inputs;
     inputs.emplace_back();
     Logger logger;
     bool should_log = false;
@@ -49,12 +52,9 @@ int main(int argc, char *argv[]) {
             processors_type_count[ECHO_NAME]++;
             std::string echoname(ECHO_NAME +
                          std::to_string(processors_type_count[ECHO_NAME]));
-            std::string& last_input = inputs.back();
+            BlockingString& last_input = inputs.back();
             inputs.emplace_back();
-            Thread* echo = new EchoProcessor(echoname, last_input,
-                                                    inputs.back(), logger);
-            echo->start();
-            processors.append(echo);
+            threads.addEchoThread(echoname, last_input, inputs.back(), logger);
             if (i + 1 < argc && std::string(argv[i + 1]) != "::")
                 return ERROR;
         } else if (param == MATCH_NAME) {
@@ -62,12 +62,10 @@ int main(int argc, char *argv[]) {
             std::string matchName(MATCH_NAME +
                          std::to_string(processors_type_count[MATCH_NAME]));
             std::regex reg(argv[i + 1]);
-            std::string& last_input = inputs.back();
+            BlockingString& last_input = inputs.back();
             inputs.emplace_back();
-            Thread* match = new MatchProcessor(matchName, last_input,
-                                                  inputs.back(), reg, logger);
-            match->start();
-            processors.append(match);
+            threads.addMatchThread(matchName, last_input, inputs.back(),
+                                      reg, logger);
             if (i + 2 < argc && std::string(argv[i + 2]) != "::")
                 return ERROR;
         } else if (param == REPLACE_NAME) {
@@ -76,34 +74,19 @@ int main(int argc, char *argv[]) {
                         std::to_string(processors_type_count[REPLACE_NAME]));
             std::regex reg(argv[i + 1]);
             std::string replacement(argv[i + 2]);
-            std::string& last_input = inputs.back();
+            BlockingString& last_input = inputs.back();
             inputs.emplace_back();
-            Thread* replace = new ReplaceProcessor(replaceName,
-                          last_input, inputs.back(), reg, replacement, logger);
-            replace->start();
-            processors.append(replace);
+            threads.addReplaceThread(replaceName, last_input, inputs.back(),
+                                        reg, replacement, logger);
             if (i + 3 < argc && std::string(argv[i + 3]) != "::") {
                 return ERROR;
             }
         }
     }
-    //for (Thread* thread : processors) {
-    //    thread->join();
-    //    delete thread;
-    //}
-    inputs.front() = input.readLine();
-    while (input.onEof() == 0) {
-
-        //for (LineProcessor* processor : processors) {
-        //    processor->run();
-        //}
-        if (inputs.back() != "") {
-            output.writeLine(inputs.back());
-        }
-        sleep(10);
-        inputs.front() = input.readLine();
-    }
-    processors.join();
+    threads.addReaderThread(input, inputs.front());
+    threads.addWriterThread(output, inputs.back());
+    threads.start();
+    threads.join();
     if (should_log) {
         logger.finnishLogging();
     }
