@@ -27,7 +27,6 @@ int main(int argc, char *argv[]) {
     std::list<BlockingString> inputs;
     inputs.emplace_back();
     Logger logger;
-    bool should_log = false;
     std::map<std::string, int> processors_type_count = {{ECHO_NAME, 0},
                                                         {MATCH_NAME, 0},
                                                         {REPLACE_NAME, 0}};
@@ -41,7 +40,7 @@ int main(int argc, char *argv[]) {
         } else if (param == OUTPUT_NAME) {
             output.changeFile(argv[i + 1], "w");
         } else if (param == DEBUG_NAME) {
-            should_log = true;
+            logger.setShouldLog(true);
         } else if (param == ECHO_NAME) {
             processors_type_count[ECHO_NAME]++;
             std::string echoname(ECHO_NAME +
@@ -80,8 +79,6 @@ int main(int argc, char *argv[]) {
     threads.addWriterThread(output, inputs.back());
     threads.start();
     threads.join();
-    if (should_log) {
-        logger.finnishLogging();
-    }
+    logger.finnishLogging();
     return OK;
 }
