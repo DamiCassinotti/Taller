@@ -6,14 +6,8 @@
 #include <list>
 #include <unistd.h>
 #include "File.h"
-#include "LineProcessor.h"
-#include "EchoProcessor.h"
-#include "MatchProcessor.h"
-#include "ReplaceProcessor.h"
-#include "Processors.h"
+#include "Threads.h"
 #include "BlockingString.h"
-#include "Reader.h"
-#include "Writer.h"
 
 #define INPUT_NAME "--input"
 #define OUTPUT_NAME "--output"
@@ -78,9 +72,8 @@ int main(int argc, char *argv[]) {
             inputs.emplace_back();
             threads.addReplaceThread(replaceName, last_input, inputs.back(),
                                         reg, replacement, logger);
-            if (i + 3 < argc && std::string(argv[i + 3]) != "::") {
+            if (i + 3 < argc && std::string(argv[i + 3]) != "::")
                 return ERROR;
-            }
         }
     }
     threads.addReaderThread(input, inputs.front());
