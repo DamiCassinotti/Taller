@@ -13,7 +13,7 @@ protected:
     BlockingString &input;
     BlockingString &output;
     Logger &logger;
-    void normalLog();
+    void normalLog(std::string input_content, std::string output_content);
 public:
     LineProcessor(std::string name, BlockingString &input,
                   BlockingString &output, Logger &logger);

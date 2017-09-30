@@ -14,17 +14,13 @@ void MatchProcessor::run() {
     while (input_content != "\n\n") {
         if (std::regex_search(input_content, rgx)) {
             output.insert(input_content);
-            //normalLog();
+            normalLog(input_content, input_content);
         } else {
-            //filteredLog();
+            normalLog(input_content, "(Filtrado)");
         }
         input_content = input.getString();
     }
     output.insert(input_content);
-}
-
-void MatchProcessor::filteredLog() {
-    logger.log(name, input.getString() + " -> " + "(Filtrado)");
 }
 
 MatchProcessor::~MatchProcessor() {}

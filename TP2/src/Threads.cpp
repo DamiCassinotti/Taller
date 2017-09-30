@@ -34,10 +34,6 @@ void Threads::addWriterThread(File &file, BlockingString &input) {
     this->threads.push_back(writer);
 }
 
-void Threads::append(Thread *processor) {
-    this->threads.push_back(processor);
-}
-
 void Threads::start() {
     for (Thread* thread : threads) {
         thread->start();

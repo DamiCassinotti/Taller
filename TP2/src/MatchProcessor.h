@@ -8,7 +8,6 @@
 class MatchProcessor : public LineProcessor {
 private:
     std::regex rgx;
-    void filteredLog();
 public:
     MatchProcessor(std::string name, BlockingString &input, BlockingString &output,
                    std::regex rgx, Logger &logger);

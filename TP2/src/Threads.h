@@ -22,7 +22,6 @@ public:
                           replacement, Logger &logger);
     void addReaderThread(File &file, BlockingString &input);
     void addWriterThread(File &file, BlockingString &input);
-    void append(Thread* processor);
     void start();
     void join();
     ~Threads();

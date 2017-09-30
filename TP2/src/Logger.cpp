@@ -8,6 +8,7 @@ void Logger::addProcessor(std::string name) {
 }
 
 void Logger::log(std::string processor_name, std::string line) {
+    std::lock_guard<std::mutex> lock(mtx);
     this->lines_by_processor[processor_name].push_back(line);
 }
 

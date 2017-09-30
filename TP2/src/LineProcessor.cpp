@@ -7,8 +7,9 @@ LineProcessor::LineProcessor(std::string name, BlockingString &input,
     logger.addProcessor(name);
 }
 
-void LineProcessor::normalLog() {
-    logger.log(name, input.getString() + " -> " + output.getString());
+void LineProcessor::normalLog(std::string input_content,
+                              std::string output_content) {
+    logger.log(name, input_content + " -> " + output_content);
 }
 
 LineProcessor::~LineProcessor() { }

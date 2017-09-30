@@ -11,6 +11,7 @@ void EchoProcessor::run() {
     std::string input_content = input.getString();
     while (input_content != "\n\n") {
         output.insert(input_content);
+        normalLog(input_content, input_content);
         input_content = input.getString();
     }
     output.insert(input_content);
