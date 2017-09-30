@@ -26,7 +26,7 @@ std::string File::readLine() {
 }
 
 void File::writeLine(std::string line) {
-    fprintf(this->file, "%s", line.c_str());
+    fprintf(this->file, "%s\n", line.c_str());
 }
 
 bool File::onEof() {
