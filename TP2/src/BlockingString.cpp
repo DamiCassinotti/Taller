@@ -1,5 +1,6 @@
 #include "BlockingString.h"
 #include <iostream>
+#include <string>
 
 BlockingString::BlockingString() {}
 

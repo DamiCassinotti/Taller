@@ -2,6 +2,7 @@
 #define TP2_PROCESSORS_H
 
 #include <list>
+#include <string>
 #include "EchoProcessor.h"
 #include "MatchProcessor.h"
 #include "ReplaceProcessor.h"

@@ -1,5 +1,6 @@
 #include "Threads.h"
 #include <list>
+#include <string>
 
 Threads::Threads() {}
 

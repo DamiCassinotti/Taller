@@ -12,7 +12,8 @@ ReplaceProcessor::ReplaceProcessor(std::string name, BlockingString &input,
 void ReplaceProcessor::run() {
     std::string input_content = input.getString();
     while (input_content != "\n\n") {
-        std::string output_content = std::regex_replace(input_content, rgx, replacement);
+        std::string output_content = std::regex_replace(input_content, rgx,
+                                                        replacement);
         output.insert(output_content);
         normalLog(input_content, output_content);
         input_content = input.getString();

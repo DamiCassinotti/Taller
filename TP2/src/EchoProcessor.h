@@ -7,8 +7,8 @@
 
 class EchoProcessor: public LineProcessor {
 public:
-    EchoProcessor(std::string name, BlockingString &input, BlockingString &output,
-                  Logger &logger);
+    EchoProcessor(std::string name, BlockingString &input,
+                  BlockingString &output, Logger &logger);
     void run() override;
     ~EchoProcessor();
 };

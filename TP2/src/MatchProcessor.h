@@ -9,8 +9,8 @@ class MatchProcessor : public LineProcessor {
 private:
     std::regex rgx;
 public:
-    MatchProcessor(std::string name, BlockingString &input, BlockingString &output,
-                   std::regex rgx, Logger &logger);
+    MatchProcessor(std::string name, BlockingString &input, BlockingString
+                    &output, std::regex rgx, Logger &logger);
     void run() override;
     ~MatchProcessor();
 };

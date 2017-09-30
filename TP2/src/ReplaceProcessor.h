@@ -11,8 +11,9 @@ private:
     std::regex rgx;
     std::string replacement;
 public:
-    ReplaceProcessor(std::string name, BlockingString &input, BlockingString &output,
-                     std::regex rgx, std::string replacement, Logger &logger);
+    ReplaceProcessor(std::string name, BlockingString &input,
+                     BlockingString &output, std::regex rgx, std::string
+                     replacement, Logger &logger);
     void run() override;
     ~ReplaceProcessor();
 };

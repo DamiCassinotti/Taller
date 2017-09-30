@@ -1,7 +1,9 @@
 #include "Writer.h"
 #include <iostream>
+#include <string>
 
-Writer::Writer(File &file, BlockingString &input) : Thread(), file(file), input(input) {}
+Writer::Writer(File &file, BlockingString &input) : Thread(), file(file),
+                                                    input(input) {}
 
 void Writer::run() {
     std::string new_line = input.getString();

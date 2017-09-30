@@ -1,7 +1,9 @@
 #include "Reader.h"
 #include <iostream>
+#include <string>
 
-Reader::Reader(File &file, BlockingString &input) : Thread(), file(file), input(input) {}
+Reader::Reader(File &file, BlockingString &input) : Thread(), file(file),
+                                                    input(input) {}
 
 void Reader::run() {
     while (!file.onEof()) {
