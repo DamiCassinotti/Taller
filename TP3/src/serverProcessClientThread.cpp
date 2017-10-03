@@ -3,12 +3,15 @@
 #include <sstream>
 #include "serverProcessClientThread.h"
 
-serverProcessClientThread::serverProcessClientThread(commonSocket &sock,serverCardsData &cards,bool &is_server_connected): sock(sock), cards(cards), is_server_connected(is_server_connected) {
+serverProcessClientThread::serverProcessClientThread(commonSocket &sock,
+                                                     serverCardsData &cards,
+                                     serverConnectionData &is_server_connected):
+        sock(sock), cards(cards), is_server_connected(is_server_connected) {
     are_we_connected = true;
 }
 
 void serverProcessClientThread::run() {
-    while (are_we_connected && is_server_connected) {
+    while (are_we_connected && is_server_connected.getConnected()) {
         std::string command;
         std::string card;
         std::string ammount;
@@ -66,6 +69,8 @@ void serverProcessClientThread::run() {
 
         std::cout << command << card << ammount << " -> " <<stream.str()<<"\n";
         sock.send(stream.str(), msg_length);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 
     }
 }

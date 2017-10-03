@@ -2,7 +2,7 @@
 #include "serverAcceptConnectionsThread.h"
 
 serverAcceptConnectionsThread::serverAcceptConnectionsThread(std::string port,
-        bool &is_server_connected) : port(port),
+                     serverConnectionData &is_server_connected) : port(port),
                                      is_server_connected(is_server_connected) {}
 
 void serverAcceptConnectionsThread::run() {

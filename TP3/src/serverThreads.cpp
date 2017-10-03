@@ -1,5 +1,6 @@
 #include "serverThreads.h"
 #include "serverProcessClientThread.h"
+#include "serverConnectionData.h"
 #include <list>
 #include <string>
 #include <iostream>
@@ -8,7 +9,7 @@ Threads::Threads() {}
 
 void Threads::addProcessClientThreadAndStart(commonSocket &sock,
                                              serverCardsData &cards,
-                                     bool &is_server_connected) {
+                             serverConnectionData &is_server_connected) {
     Thread* thread = new serverProcessClientThread(sock, cards,
                                                   is_server_connected);
     this->threads.push_back(thread);

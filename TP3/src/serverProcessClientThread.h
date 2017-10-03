@@ -4,6 +4,7 @@
 #include "serverThread.h"
 #include "commonSocket.h"
 #include "serverCardsData.h"
+#include "serverConnectionData.h"
 
 #define COMMAND_LENGTH 1
 #define CARD_LENGTH 10
@@ -16,11 +17,11 @@ class serverProcessClientThread : public Thread {
 private:
     commonSocket &sock;
     serverCardsData &cards;
-    bool &is_server_connected;
+    serverConnectionData &is_server_connected;
     bool are_we_connected;
 public:
     serverProcessClientThread(commonSocket &sock, serverCardsData &cards,
-                              bool &is_server_connected);
+                              serverConnectionData &is_server_connected);
     void run() override;
     ~serverProcessClientThread();
 

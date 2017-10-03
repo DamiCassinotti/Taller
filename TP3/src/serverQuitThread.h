@@ -3,11 +3,17 @@
 
 
 #include "commonFile.h"
+#include "serverThread.h"
+#include "serverConnectionData.h"
 
-class serverQuitThread {
+class serverQuitThread : public Thread {
 private:
+    serverConnectionData &is_server_connected;
     File input;
-    bool& is_server_connected;
+public:
+    explicit serverQuitThread(serverConnectionData &is_server_connected);
+    void run() override;
+    ~serverQuitThread();
 };
 
 

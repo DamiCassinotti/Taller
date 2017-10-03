@@ -6,6 +6,7 @@
 #include "serverThread.h"
 #include "commonSocket.h"
 #include "serverCardsData.h"
+#include "serverConnectionData.h"
 
 class Threads {
 private:
@@ -14,8 +15,7 @@ public:
     Threads();
     void addProcessClientThreadAndStart(commonSocket& sock,
                                         serverCardsData& cards,
-                                        bool& is_server_connected);
-    void start();
+                                    serverConnectionData &is_server_connected);
     void join();
     ~Threads();
 };

@@ -9,6 +9,6 @@ set(SOURCE_FILES
         src/clientOperations.h src/commonFile.cpp src/commonFile.h
         src/serverThread.cpp src/serverThread.h  src/serverThreads.cpp
         src/serverThreads.h src/serverCardsData.cpp
-        src/serverCardsData.h src/serverProcessingCardException.cpp src/serverProcessingCardException.h src/serverAcceptConnectionsThread.cpp src/serverAcceptConnectionsThread.h src/serverProcessClientThread.cpp src/serverProcessClientThread.h src/serverQuitThread.cpp src/serverQuitThread.h)
+        src/serverCardsData.h src/serverProcessingCardException.cpp src/serverProcessingCardException.h src/serverAcceptConnectionsThread.cpp src/serverAcceptConnectionsThread.h src/serverProcessClientThread.cpp src/serverProcessClientThread.h src/serverQuitThread.cpp src/serverQuitThread.h src/serverConnectionData.cpp src/serverConnectionData.h)
 
 add_executable(TP3 ${SOURCE_FILES})

@@ -7,6 +7,7 @@
 #include "serverCardsData.h"
 #include "serverProcessClientThread.h"
 #include "serverThreads.h"
+#include "serverConnectionData.h"
 
 
 class serverAcceptConnectionsThread : public Thread {
@@ -14,10 +15,11 @@ private:
     std::string port;
     Threads threads;
     std::list<commonSocket> sockets;
-    bool is_server_connected;
+    serverConnectionData &is_server_connected;
     serverCardsData cards;
 public:
-    serverAcceptConnectionsThread(std::string port, bool& is_server_connected);
+    serverAcceptConnectionsThread(std::string port,
+                                  serverConnectionData &is_server_connected);
     void run();
     ~serverAcceptConnectionsThread();
 };
