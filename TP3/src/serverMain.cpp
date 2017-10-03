@@ -74,37 +74,6 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        /*if (!cards.count(card) && command != "R") {
-            // Si la tarjeta no existe, devuelvo error
-            // Pero solo si no quiero registrarla
-            response = ERROR_TARJETA_INEXISTENTE;
-            printErrMsg(command, card, ammount, response);
-            sock.send(response, ERROR_MSG_LENGTH);
-            continue;
-        }
-        if (command == "A") {
-            if (cards[card] + monto < 0) {
-                response = ERROR_MONTO_INVALIDO;
-                printErrMsg(command, card, ammount, response);
-                sock.send(response, ERROR_MSG_LENGTH);
-                continue;
-            }
-            cards[card] += monto;
-        } else if (command == "F") {
-            cards[card] += monto;
-        } else if (command == "R") {
-            if (cards.count(card)) {
-                response = ERROR_TARJETA_EXISTENTE;
-                printErrMsg(command, card, ammount, response);
-                sock.send(response, ERROR_MSG_LENGTH);
-                continue;
-            }
-            cards[card] = 0;
-            response = command + card;
-        } else if (command == "S") {
-            cards[card] = monto;
-        }*/
-
         std::stringstream stream;
         stream << command;
         stream << std::setfill('0') << std::setw(10) << card;
