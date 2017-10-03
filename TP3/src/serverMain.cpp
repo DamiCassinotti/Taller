@@ -4,7 +4,8 @@
 #include <sstream>
 #include <iomanip>
 #include "commonSocket.h"
-#include "commonFile.h"
+#include "serverCardsData.h"
+#include "serverProcessingCardException.h"
 
 #define OK 0;
 #define PORT_POSITION 1
@@ -18,11 +19,6 @@
 #define SUCCESS_MSG_LENGTH_BASIC 11 // Para los registros (envio sin monto)
 #define SUCCESS_MSG_LENGTH_FULL 21 //Para los demás comandos (envío con monto)
 
-void printErrMsg(std::string& command, std::string& card, std::string& ammount,
-                 std::string& output){
-    std::cerr << command << card << ammount << " -> " << output << "\n";
-}
-
 int main(int argc, char* argv[]) {
     if (argc != 2)
         return OK;
@@ -30,12 +26,11 @@ int main(int argc, char* argv[]) {
     commonSocket sock;
     sock.accept(port);
     bool are_we_connected = true;
-    std::map<std::string, int> cards;
+    serverCardsData cards;
     while (are_we_connected) {
         std::string command;
         std::string card;
         std::string ammount;
-        std::string response;
         int monto = 0;
         int res = sock.recv(command, COMMAND_LENGTH);
         if (res <= 0) {
@@ -56,7 +51,30 @@ int main(int argc, char* argv[]) {
             }
             monto = std::stoi(ammount);
         }
-        if (!cards.count(card) && command != "R") {
+
+        int monto_final = 0;
+        try {
+            if (command == "A") {
+                monto_final = cards.addAmmountAndGetBalanceIfCardExists(card,
+                                                                      monto);
+            } else if (command == "F") {
+                monto_final = cards.forceAddAmmountAndGetBalanceIfCardsExists
+                        (card, monto);
+            } else if (command == "S") {
+                monto_final = cards.getBalanceIfCardExists(card);
+            } else if (command == "R") {
+                cards.registerCardIfDoesntExist(card);
+            } else if (command == "S") {
+                cards.setBalanceIfCardExists(card, monto);
+                monto_final = monto;
+            }
+        } catch (const serverProcessingCardException& e) {
+            std::cerr << command << card << ammount << " -> " << e.what()<<"\n";
+            sock.send(e.what(), ERROR_MSG_LENGTH);
+            continue;
+        }
+
+        /*if (!cards.count(card) && command != "R") {
             // Si la tarjeta no existe, devuelvo error
             // Pero solo si no quiero registrarla
             response = ERROR_TARJETA_INEXISTENTE;
@@ -66,7 +84,7 @@ int main(int argc, char* argv[]) {
         }
         if (command == "A") {
             if (cards[card] + monto < 0) {
-                response = ERROR_TARJETA_INEXISTENTE;
+                response = ERROR_MONTO_INVALIDO;
                 printErrMsg(command, card, ammount, response);
                 sock.send(response, ERROR_MSG_LENGTH);
                 continue;
@@ -74,8 +92,6 @@ int main(int argc, char* argv[]) {
             cards[card] += monto;
         } else if (command == "F") {
             cards[card] += monto;
-        } else if (command == "P") {
-            //response = ()
         } else if (command == "R") {
             if (cards.count(card)) {
                 response = ERROR_TARJETA_EXISTENTE;
@@ -87,7 +103,7 @@ int main(int argc, char* argv[]) {
             response = command + card;
         } else if (command == "S") {
             cards[card] = monto;
-        }
+        }*/
 
         std::stringstream stream;
         stream << command;
@@ -95,7 +111,7 @@ int main(int argc, char* argv[]) {
         int msg_length = SUCCESS_MSG_LENGTH_BASIC;
         if (command != "R") {
             // Si registré la tarjeta no tengo que devolver el saldo
-            stream << std::setfill('0') << std::setw(10) << cards[card];
+            stream << std::setfill('0') << std::setw(10) << monto_final;
             msg_length = SUCCESS_MSG_LENGTH_FULL;
         }
 
