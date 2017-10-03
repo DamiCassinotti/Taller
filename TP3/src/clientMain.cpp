@@ -18,6 +18,12 @@
 #define MONTO_CHECKSUM_SIZE 5
 #define CARD_CHEKSUM_SIZE 5
 #define CHECKSUM_ERROR "E00001";
+#define SERVER_MSG_BASIC 11 //Mensaje sin monto
+#define SERVER_MSG_FULL 21 //Mensaje con monto
+#define COMMAND_LENGTH_FROM_SERVER 1
+#define CARD_LENGTH_FROM_SERVER 10
+#define AMMOUNT_LENGTH_FROM_SERVER 10
+#define ERRCODE_LENGTH_FROM_SERVER 5
 
 std::string getMessageWithoutAmmount(const std::string command,
                                      const unsigned int card);
@@ -27,10 +33,10 @@ std::string getMessageWithAmmount(const std::string command,
 int main(int argc, char* argv[]) {
     if (argc != 4)
         return OK;
-    //std::string host(argv[HOST_POSITION]);
-    //std::string port(argv[PORT_POSITION]);
-    //commonSocket sock;
-    //sock.connect(host, port);
+    std::string host(argv[HOST_POSITION]);
+    std::string port(argv[PORT_POSITION]);
+    commonSocket sock;
+    sock.connect(host, port);
 
     clientBinaryFile input(argv[FILE_POSITION]);
     if (!input.isOpen())
@@ -86,11 +92,36 @@ int main(int argc, char* argv[]) {
         } else {
             msg = getMessageWithoutAmmount(command, card.to_ulong());
         }
-        std::cout << msg << "\n";
-
+        int res = sock.send(msg, should_have_ammount ? SERVER_MSG_FULL :
+                       SERVER_MSG_BASIC);
+        if (res <= 0)
+            break;
+        std::string recv_command;
+        std::string recv_errcode;
+        std::string recv_card;
+        std::string recv_ammount;
+        res = sock.recv(recv_command, COMMAND_LENGTH_FROM_SERVER);
+        if (recv_command == "E") {
+            // El servidor me devolvió error
+            sock.recv(recv_errcode, ERRCODE_LENGTH_FROM_SERVER);
+            if (res <= 0)
+                break;
+            std::cout << recv_command << recv_errcode << "\n";
+        } else {
+            res = sock.recv(recv_card, CARD_LENGTH_FROM_SERVER);
+            if (res <= 0)
+                break;
+            if (command != "R") {
+                // Si no realicé un registro, me tiene que llegar el saldo
+                res = sock.recv(recv_ammount, AMMOUNT_LENGTH_FROM_SERVER);
+                if (res <= 0)
+                    break;
+            }
+            std::cout << recv_command << recv_card << recv_ammount << "\n";
+        }
     }
 
-    //sock.shutdown();
+    sock.shutdown();
     return OK;
 }
 
