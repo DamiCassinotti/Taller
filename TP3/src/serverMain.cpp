@@ -1,93 +1,19 @@
 #include <string>
 #include <iostream>
-#include <map>
-#include <sstream>
-#include <iomanip>
-#include "commonSocket.h"
-#include "serverCardsData.h"
-#include "serverProcessingCardException.h"
+#include "serverAcceptConnectionsThread.h"
 
 #define OK 0;
 #define PORT_POSITION 1
-#define COMMAND_LENGTH 1
-#define CARD_LENGTH 10
-#define AMMOUNT_LENGTH 10
-#define ERROR_TARJETA_INEXISTENTE "E00002"
-#define ERROR_MONTO_INVALIDO "E00003"
-#define ERROR_TARJETA_EXISTENTE "E00004"
-#define ERROR_MSG_LENGTH 6
-#define SUCCESS_MSG_LENGTH_BASIC 11 // Para los registros (envio sin monto)
-#define SUCCESS_MSG_LENGTH_FULL 21 //Para los demás comandos (envío con monto)
 
 int main(int argc, char* argv[]) {
     if (argc != 2)
         return OK;
     std::string port(argv[PORT_POSITION]);
-    commonSocket sock;
-    sock.accept(port);
-    bool are_we_connected = true;
-    serverCardsData cards;
-    while (are_we_connected) {
-        std::string command;
-        std::string card;
-        std::string ammount;
-        int monto = 0;
-        int res = sock.recv(command, COMMAND_LENGTH);
-        if (res <= 0) {
-            are_we_connected = false;
-            continue;
-        }
-        res = sock.recv(card, CARD_LENGTH);
-        if (res <= 0) {
-            are_we_connected = false;
-            continue;
-        }
-        if (command == "A" || command == "F" || command == "S") {
-            // Para estos comandos tengo que pedir el monto
-            res = sock.recv(ammount, AMMOUNT_LENGTH);
-            if (res <= 0) {
-                are_we_connected = false;
-                continue;
-            }
-            monto = std::stoi(ammount);
-        }
-
-        int monto_final = 0;
-        try {
-            if (command == "A") {
-                monto_final = cards.addAmmountAndGetBalanceIfCardExists(card,
-                                                                      monto);
-            } else if (command == "F") {
-                monto_final = cards.forceAddAmmountAndGetBalanceIfCardsExists
-                        (card, monto);
-            } else if (command == "S") {
-                monto_final = cards.getBalanceIfCardExists(card);
-            } else if (command == "R") {
-                cards.registerCardIfDoesntExist(card);
-            } else if (command == "S") {
-                cards.setBalanceIfCardExists(card, monto);
-                monto_final = monto;
-            }
-        } catch (const serverProcessingCardException& e) {
-            std::cerr << command << card << ammount << " -> " << e.what()<<"\n";
-            sock.send(e.what(), ERROR_MSG_LENGTH);
-            continue;
-        }
-
-        std::stringstream stream;
-        stream << command;
-        stream << std::setfill('0') << std::setw(10) << card;
-        int msg_length = SUCCESS_MSG_LENGTH_BASIC;
-        if (command != "R") {
-            // Si registré la tarjeta no tengo que devolver el saldo
-            stream << std::setfill('0') << std::setw(10) << monto_final;
-            msg_length = SUCCESS_MSG_LENGTH_FULL;
-        }
-
-        std::cout << command << card << ammount << " -> " <<stream.str()<<"\n";
-        sock.send(stream.str(), msg_length);
-
-    }
+    bool is_server_connected = true;
+    serverAcceptConnectionsThread accept_connections_thread(port,
+                                                            is_server_connected);
+    accept_connections_thread.start();
+    accept_connections_thread.join();
     return 0;
 }
 
