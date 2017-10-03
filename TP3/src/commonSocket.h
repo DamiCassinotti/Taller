@@ -13,13 +13,13 @@ class commonSocket {
 private:
     int sock;
     int peersock;
+    void shutdown();
 public:
     commonSocket();
     ~commonSocket();
     void connect(std::string host, std::string port);
     void accept(std::string port);
     bool isConnected();
-    void shutdown();
     int send(std::string msg, int size);
     int recv(std::string& buf, int size);
 };

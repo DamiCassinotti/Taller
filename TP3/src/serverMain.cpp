@@ -103,7 +103,6 @@ int main(int argc, char* argv[]) {
         sock.send(stream.str(), msg_length);
 
     }
-    sock.shutdown();
     return 0;
 }
 

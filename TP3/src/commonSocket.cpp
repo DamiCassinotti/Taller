@@ -5,7 +5,9 @@ commonSocket::commonSocket() {
     this->peersock = 0;
 }
 
-commonSocket::~commonSocket() = default;
+commonSocket::~commonSocket(){
+    shutdown();
+}
 
 void commonSocket::connect(std::string host, std::string port) {
     int sock = 0;
