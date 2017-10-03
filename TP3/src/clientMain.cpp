@@ -1,9 +1,12 @@
 #include <string>
 #include <iostream>
 #include <bitset>
+#include <sstream>
+#include <iomanip>
 #include "commonSocket.h"
 #include "commonFile.h"
 #include "clientBinaryFile.h"
+#include "clientOperations.h"
 
 #define OK 0;
 #define HOST_POSITION 1
@@ -14,6 +17,12 @@
 #define OPCODE_SIZE 3
 #define MONTO_CHECKSUM_SIZE 5
 #define CARD_CHEKSUM_SIZE 5
+#define CHECKSUM_ERROR "E00001";
+
+std::string getMessageWithoutAmmount(const std::string command,
+                                     const unsigned int card);
+std::string getMessageWithAmmount(const std::string command,
+                                  const unsigned int card, const int ammount);
 
 int main(int argc, char* argv[]) {
     if (argc != 4)
@@ -28,26 +37,77 @@ int main(int argc, char* argv[]) {
         return OK;
     File output(stdout);
 
-    //while (!input.eof()) {
-    std::bitset<METADATA_SIZE> metadata = input.getTwoBytes();
-    std::cout << "La metadata es " << metadata << "\n";
-    metadata >>= PADDING_SIZE; //Elimino el padding
-    std::bitset<OPCODE_SIZE> opcode(metadata.to_ulong());
-    metadata >>= OPCODE_SIZE; //Elimino el opcode
-    std::bitset<MONTO_CHECKSUM_SIZE> monto_checksum(metadata.to_ulong());
-    metadata >>= MONTO_CHECKSUM_SIZE; //Elimino el checksum del monto
-    std::bitset<CARD_CHEKSUM_SIZE> card_checksum(metadata.to_ulong());
-    std::bitset<32> card = input.getFourBytes();
-    std::cout << "El numero de tarjeta es: " << card.to_ulong() << " (" <<
-              card << ")\n";
-    std::cout << "El checksum de la tarjeta es: " << card_checksum.to_ulong()
-              << " (" << card_checksum << ")\n";
-    std::cout << "El opcode es: " << opcode.to_ulong() << "\n";
-    std::cout << "El checksum del monto es: " << monto_checksum.to_ulong() <<
-                                                                           " "
-                                                                                   "(" << monto_checksum << ")\n";
-    //}
+    while (!input.eof()) {
+        std::bitset<METADATA_SIZE> metadata = input.getTwoBytes();
+        metadata >>= PADDING_SIZE; //Elimino el padding
+        std::bitset<OPCODE_SIZE> opcode(metadata.to_ulong());
+        metadata >>= OPCODE_SIZE; //Elimino el opcode
+        std::bitset<MONTO_CHECKSUM_SIZE> monto_checksum(metadata.to_ulong());
+        metadata >>= MONTO_CHECKSUM_SIZE; //Elimino el checksum del monto
+        std::bitset<CARD_CHEKSUM_SIZE> card_checksum(metadata.to_ulong());
+        std::bitset<32> card = input.getFourBytes();
+        if (card_checksum.to_ulong() != card.count()) {
+            std::cout << CHECKSUM_ERROR;
+            std::cout << "\n";
+            continue;
+        }
+        bool should_have_ammount = false;
+        std::string command;
+        switch(opcode.to_ulong()) {
+            case AGREGAR_SALDO:
+                command = "A";
+                should_have_ammount = true;
+                break;
+            case FORZAR_AGREGAR_SALDO:
+                command = "F";
+                should_have_ammount = true;
+                break;
+            case PREGUNTAR_SALDO:
+                command = "P";
+                break;
+            case REGISTRAR_TARJETA:
+                command = "R";
+                break;
+            case SETEAR_SALDO:
+                command = "S";
+                should_have_ammount = true;
+                break;
+        }
+        std::string msg;
+        if (should_have_ammount) {
+            std::bitset<32> monto = input.getFourBytes();
+            if (monto.count() != monto_checksum.to_ulong()) {
+                std::cout << CHECKSUM_ERROR;
+                std::cout << "\n";
+                continue;
+            }
+            msg = getMessageWithAmmount(command, card.to_ulong(),
+                                        monto.to_ulong());
+        } else {
+            msg = getMessageWithoutAmmount(command, card.to_ulong());
+        }
+        std::cout << msg << "\n";
+
+    }
 
     //sock.shutdown();
-    return 0;
+    return OK;
+}
+
+std::string getMessageWithoutAmmount(const std::string command,
+                                     const unsigned int card) {
+    std::stringstream stream;
+    stream << command;
+    stream << std::setfill('0') << std::setw(10);
+    stream << card;
+    return stream.str();
+}
+
+std::string getMessageWithAmmount(const std::string command,
+                                  const unsigned int card, const int ammount) {
+    std::stringstream stream;
+    stream << getMessageWithoutAmmount(command, card);
+    stream << std::setfill('0') << std::setw(10) << std::internal;
+    stream << ammount;
+    return stream.str();
 }

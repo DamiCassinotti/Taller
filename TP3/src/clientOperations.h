@@ -1,0 +1,10 @@
+#ifndef TP3_CLIENTOPERATIONS_H
+#define TP3_CLIENTOPERATIONS_H
+
+enum operations {
+    AGREGAR_SALDO, FORZAR_AGREGAR_SALDO, PREGUNTAR_SALDO, REGISTRAR_TARJETA,
+    SETEAR_SALDO
+};
+typedef enum operations operations;
+
+#endif //TP3_CLIENTOPERATIONS_H
