@@ -4,7 +4,6 @@
 #include <sstream>
 #include <iomanip>
 #include "commonSocket.h"
-#include "commonFile.h"
 #include "clientBinaryFile.h"
 #include "clientOperations.h"
 #include "clientNoMoreToReadException.h"
@@ -47,7 +46,6 @@ int main(int argc, char* argv[]) {
     clientBinaryFile input(argv[FILE_POSITION]);
     if (!input.isOpen())
         return OK;
-    File output(stdout);
 
     while (!input.eof()) {
         std::bitset<METADATA_SIZE> metadata;
