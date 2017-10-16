@@ -2,6 +2,7 @@
 #define TP3_SERVERACCEPTCONNECTIONSTHREAD_H
 
 #include <list>
+#include <string>
 #include "serverThread.h"
 #include "commonSocket.h"
 #include "serverCardsData.h"

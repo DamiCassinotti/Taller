@@ -1,19 +1,22 @@
 #include <iostream>
 #include "serverAcceptConnectionsThread.h"
+#include <string>
+#include <list>
 
 serverAcceptConnectionsThread::serverAcceptConnectionsThread(std::string port,
                      serverConnectionData &is_server_connected) : port(port),
                                      is_server_connected(is_server_connected) {}
 
 void serverAcceptConnectionsThread::run() {
-    commonSocket sock;
-    //while (is_server_connected) {
-        sock.accept(port);
-        //this->sockets.push_back(sock);
-        this->threads.addProcessClientThreadAndStart(sock, cards,
+    commonSocket connection;
+    connection.bindAndListen(port);
+    std::list<commonSocket> clientes;
+    while (is_server_connected.getConnected()) {
+        clientes.emplace_back();
+        clientes.back().accept(connection);
+        this->threads.addProcessClientThreadAndStart(clientes.back(), cards,
                                                      is_server_connected);
-        //sock = commonSocket();
-    //}
+    }
     threads.join();
 }
 

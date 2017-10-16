@@ -1,8 +1,10 @@
 #include "commonSocket.h"
+#include "serverConnectionData.h"
+#include <string>
+#include <condition_variable>
 
 commonSocket::commonSocket() {
     this->sock = 0;
-    this->peersock = 0;
 }
 
 commonSocket::~commonSocket(){
@@ -37,8 +39,8 @@ void commonSocket::connect(std::string host, std::string port) {
     this->sock = sock;
 }
 
-void commonSocket::accept(std::string port) {
-    int s = 0, sock, peersock;
+void commonSocket::bindAndListen(std::string port) {
+    int s = 0, peersock;
 
     struct addrinfo hints;
     struct addrinfo *ptr;
@@ -74,25 +76,23 @@ void commonSocket::accept(std::string port) {
         return;
     }
 
-    sock = ::accept(peersock, NULL, NULL);
-    if (sock == -1)
-        return;
-
-    this->sock = sock;
-    this->peersock = peersock;
+    this->sock = peersock;
 }
 
-bool commonSocket::isConnected() {
-    return this->sock != 0;
+void commonSocket::accept(commonSocket& peersock) {
+    int sock = ::accept(peersock.getFileDescriptor(), NULL, NULL);
+    if (sock == -1)
+        return;
+    this->sock = sock;
+}
+
+int commonSocket::getFileDescriptor() {
+    return this->sock;
 }
 
 void commonSocket::shutdown() {
     ::shutdown(this->sock, SHUT_RDWR);
     close(this->sock);
-    if (this->peersock != 0) {
-        ::shutdown(this->peersock, SHUT_RDWR);
-        close(this->peersock);
-    }
 }
 
 int commonSocket::send(std::string msg, int size) {
@@ -114,7 +114,6 @@ int commonSocket::recv(std::string &buf, int size) {
     int received = 0;
     int s = 0;
     bool is_the_socket_valid = true;
-    // Cambio el tamaño del
     buf.resize(size);
     while (received < size && is_the_socket_valid) {
         s = ::recv(this->sock, &buf.at(received), size - received,

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <string>
 #include "serverProcessClientThread.h"
 
 serverProcessClientThread::serverProcessClientThread(commonSocket &sock,
@@ -43,7 +44,7 @@ void serverProcessClientThread::run() {
             } else if (command == "F") {
                 monto_final = cards.forceAddAmmountAndGetBalanceIfCardsExists
                         (card, monto);
-            } else if (command == "S") {
+            } else if (command == "P") {
                 monto_final = cards.getBalanceIfCardExists(card);
             } else if (command == "R") {
                 cards.registerCardIfDoesntExist(card);
@@ -56,22 +57,17 @@ void serverProcessClientThread::run() {
             sock.send(e.what(), ERROR_MSG_LENGTH);
             continue;
         }
-
         std::stringstream stream;
         stream << command;
-        stream << std::setfill('0') << std::setw(10) << card;
+        stream << std::setfill('0') << std::setw(10) << std::internal << card;
         int msg_length = SUCCESS_MSG_LENGTH_BASIC;
         if (command != "R") {
             // Si registré la tarjeta no tengo que devolver el saldo
             stream << std::setfill('0') << std::setw(10) << monto_final;
             msg_length = SUCCESS_MSG_LENGTH_FULL;
         }
-
         std::cout << command << card << ammount << " -> " <<stream.str()<<"\n";
         sock.send(stream.str(), msg_length);
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-
     }
 }
 

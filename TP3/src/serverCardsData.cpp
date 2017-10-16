@@ -1,4 +1,5 @@
 #include "serverCardsData.h"
+#include <string>
 
 serverCardsData::serverCardsData() = default;
 serverCardsData::~serverCardsData() = default;
@@ -9,8 +10,8 @@ int serverCardsData::addAmmountAndGetBalanceIfCardExists(std::string card,
     // Si la tarjeta no existe, lanzo excepcion
     if (!cards.count(card))
         throw serverProcessingCardException(ERROR_TARJETA_INEXISTENTE);
-    // Si el monto me queda menor a cero, lanzo excepcion
-    if (cards[card] + ammount < 0)
+    // Si estoy descontando y el monto me queda menor a cero, lanzo excepcion
+    if (ammount < 0 && cards[card] + ammount < 0)
         throw serverProcessingCardException(ERROR_MONTO_INVALIDO);
     // Si no, le sumo el monto a agregar
     cards[card] += ammount;

@@ -24,7 +24,6 @@ public:
                               serverConnectionData &is_server_connected);
     void run() override;
     ~serverProcessClientThread();
-
 };
 
 

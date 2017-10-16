@@ -7,6 +7,7 @@
 #include "commonFile.h"
 #include "clientBinaryFile.h"
 #include "clientOperations.h"
+#include "clientNoMoreToReadException.h"
 
 #define OK 0;
 #define HOST_POSITION 1
@@ -25,10 +26,15 @@
 #define AMMOUNT_LENGTH_FROM_SERVER 10
 #define ERRCODE_LENGTH_FROM_SERVER 5
 
-std::string getMessageWithoutAmmount(const std::string command,
-                                     const unsigned int card);
-std::string getMessageWithAmmount(const std::string command,
-                                  const unsigned int card, const int ammount);
+std::string getMessageWithoutAmmount(const std::string& command,
+                                     unsigned int card);
+std::string getMessageWithAmmount(const std::string& command,
+                                  unsigned int card, int ammount);
+void showChecksumErrorWithAmmount(const std::string& command,
+                                         unsigned int card, int ammount);
+void showChecksumErrorWithoutAmmount(const std::string& command,
+                                            unsigned int card);
+bool validateCheacksum(std::bitset<32> metadata, std::bitset<5> checksum);
 
 int main(int argc, char* argv[]) {
     if (argc != 4)
@@ -44,22 +50,27 @@ int main(int argc, char* argv[]) {
     File output(stdout);
 
     while (!input.eof()) {
-        std::bitset<METADATA_SIZE> metadata = input.getTwoBytes();
+        std::bitset<METADATA_SIZE> metadata;
+        try {
+            metadata = input.getTwoBytes();
+        } catch (clientNoMoreToReadException& e) {
+            break;
+        }
         metadata >>= PADDING_SIZE; //Elimino el padding
         std::bitset<OPCODE_SIZE> opcode(metadata.to_ulong());
         metadata >>= OPCODE_SIZE; //Elimino el opcode
         std::bitset<MONTO_CHECKSUM_SIZE> monto_checksum(metadata.to_ulong());
         metadata >>= MONTO_CHECKSUM_SIZE; //Elimino el checksum del monto
         std::bitset<CARD_CHEKSUM_SIZE> card_checksum(metadata.to_ulong());
-        std::bitset<32> card = input.getFourBytes();
-        if (card_checksum.to_ulong() != card.count()) {
-            std::cout << CHECKSUM_ERROR;
-            std::cout << "\n";
-            continue;
+        std::bitset<32> card;
+        try {
+            card = input.getFourBytes();
+        } catch (clientNoMoreToReadException& e) {
+            break;
         }
         bool should_have_ammount = false;
         std::string command;
-        switch(opcode.to_ulong()) {
+        switch (opcode.to_ulong()) {
             case AGREGAR_SALDO:
                 command = "A";
                 should_have_ammount = true;
@@ -78,19 +89,32 @@ int main(int argc, char* argv[]) {
                 command = "S";
                 should_have_ammount = true;
                 break;
+            default:
+                break;
         }
         std::string msg;
+        std::bitset<32> monto;
         if (should_have_ammount) {
-            std::bitset<32> monto = input.getFourBytes();
-            if (monto.count() != monto_checksum.to_ulong()) {
-                std::cout << CHECKSUM_ERROR;
-                std::cout << "\n";
-                continue;
+            try {
+                monto = input.getFourBytes();
+            } catch (clientNoMoreToReadException& e) {
+                break;
             }
             msg = getMessageWithAmmount(command, card.to_ulong(),
                                         monto.to_ulong());
         } else {
             msg = getMessageWithoutAmmount(command, card.to_ulong());
+        }
+        // Si falla el checksum de la tarjeta o el monto, imprimo por
+        // pantalla y salteo la linea
+        if (!validateCheacksum(card, card_checksum) ||
+                !validateCheacksum(monto, monto_checksum)) {
+            if (should_have_ammount)
+                showChecksumErrorWithAmmount(command, card.to_ulong(),
+                                             monto.to_ulong());
+            else
+                showChecksumErrorWithoutAmmount(command, card.to_ulong());
+            continue;
         }
         int res = sock.send(msg, should_have_ammount ? SERVER_MSG_FULL :
                        SERVER_MSG_BASIC);
@@ -124,7 +148,7 @@ int main(int argc, char* argv[]) {
     return OK;
 }
 
-std::string getMessageWithoutAmmount(const std::string command,
+std::string getMessageWithoutAmmount(const std::string& command,
                                      const unsigned int card) {
     std::stringstream stream;
     stream << command;
@@ -133,11 +157,32 @@ std::string getMessageWithoutAmmount(const std::string command,
     return stream.str();
 }
 
-std::string getMessageWithAmmount(const std::string command,
+std::string getMessageWithAmmount(const std::string& command,
                                   const unsigned int card, const int ammount) {
     std::stringstream stream;
     stream << getMessageWithoutAmmount(command, card);
     stream << std::setfill('0') << std::setw(10) << std::internal;
     stream << ammount;
     return stream.str();
+}
+
+void showChecksumErrorWithAmmount(const std::string& command,
+                                         const unsigned int card,
+                                         const int ammount) {
+    std::string msg = getMessageWithAmmount(command, card, ammount);
+    std::cout << msg << " -> " << CHECKSUM_ERROR
+    std::cout << "\n";
+}
+
+void showChecksumErrorWithoutAmmount(const std::string& command,
+                                            const unsigned int card) {
+    std::string msg = getMessageWithoutAmmount(command, card);
+    std::cout << msg << " -> " << CHECKSUM_ERROR
+    std::cout << "\n";
+}
+
+bool validateCheacksum(std::bitset<32> metadata, std::bitset<5>
+        metadata_checksum) {
+    return metadata.count() == metadata_checksum.to_ulong() ||
+            (metadata.count() == 32 && metadata_checksum == 0);
 }

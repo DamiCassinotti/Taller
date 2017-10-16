@@ -1,4 +1,4 @@
-#include <iostream>
+#include <string>
 #include "serverQuitThread.h"
 
 serverQuitThread::serverQuitThread(serverConnectionData &is_server_connected) :
