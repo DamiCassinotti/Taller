@@ -15,7 +15,6 @@ class serverAcceptConnectionsThread : public Thread {
 private:
     std::string port;
     Threads threads;
-    std::list<commonSocket> sockets;
     serverConnectionData &is_server_connected;
     serverCardsData cards;
 public:

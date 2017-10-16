@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 
-Threads::Threads() {}
+Threads::Threads() = default;
 
 void Threads::addProcessClientThreadAndStart(commonSocket &sock,
                                              serverCardsData &cards,

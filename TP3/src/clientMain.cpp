@@ -181,8 +181,7 @@ void showChecksumErrorWithoutAmmount(const std::string& command,
     std::cout << "\n";
 }
 
-bool validateCheacksum(std::bitset<32> metadata, std::bitset<5>
-        metadata_checksum) {
-    return metadata.count() == metadata_checksum.to_ulong() ||
-            (metadata.count() == 32 && metadata_checksum == 0);
+bool validateCheacksum(std::bitset<32> metadata, std::bitset<5> checksum) {
+    return metadata.count() == checksum.to_ulong() ||
+            (metadata.count() == 32 && checksum == 0);
 }
