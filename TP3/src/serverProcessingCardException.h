@@ -8,7 +8,7 @@ class serverProcessingCardException {
 private:
     std::string errcode;
 public:
-    explicit serverProcessingCardException(std::string errcode);
+    explicit serverProcessingCardException(const std::string &errcode);
     std::string what() const;
     ~serverProcessingCardException();
 };

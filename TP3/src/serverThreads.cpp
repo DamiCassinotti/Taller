@@ -1,6 +1,7 @@
 #include "serverThreads.h"
 #include "serverProcessClientThread.h"
 #include "serverConnectionData.h"
+#include "serverQuitThread.h"
 #include <list>
 #include <string>
 #include <iostream>
@@ -12,6 +13,13 @@ void Threads::addProcessClientThreadAndStart(commonSocket &sock,
                              serverConnectionData &is_server_connected) {
     Thread* thread = new serverProcessClientThread(sock, cards,
                                                   is_server_connected);
+    this->threads.push_back(thread);
+    thread->start();
+}
+
+void Threads::addQuitThreadAndStart(serverConnectionData &is_server_connected,
+                                    commonSocket &connection) {
+    Thread *thread = new serverQuitThread(is_server_connected, connection);
     this->threads.push_back(thread);
     thread->start();
 }

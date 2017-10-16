@@ -1,5 +1,6 @@
 #include <iostream>
 #include "serverAcceptConnectionsThread.h"
+#include "serverQuitThread.h"
 #include <string>
 #include <list>
 
@@ -10,6 +11,7 @@ serverAcceptConnectionsThread::serverAcceptConnectionsThread(std::string port,
 void serverAcceptConnectionsThread::run() {
     commonSocket connection;
     connection.bindAndListen(port);
+    threads.addQuitThreadAndStart(is_server_connected, connection);
     std::list<commonSocket> clientes;
     while (is_server_connected.getConnected()) {
         clientes.emplace_back();

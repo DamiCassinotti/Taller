@@ -17,11 +17,11 @@ int main(int argc, char* argv[]) {
                                                         is_server_connected);
     accept_connections_thread.start();
     // Lanzo el thread que escucha el input
-    serverQuitThread quit_thread(is_server_connected);
-    quit_thread.start();
+    /*serverQuitThread quit_thread(is_server_connected);
+    quit_thread.start();*/
     // Sincronizo los threads
     accept_connections_thread.join();
-    quit_thread.join();
+    //quit_thread.join();
     return 0;
 }
 

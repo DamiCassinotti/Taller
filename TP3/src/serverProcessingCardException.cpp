@@ -2,10 +2,10 @@
 #include <string>
 
 serverProcessingCardException::serverProcessingCardException(
-        std::string errcode) : errcode(errcode) {}
+        const std::string &errcode) : errcode(errcode) {}
 
 std::string serverProcessingCardException::what() const {
     return errcode;
 }
 
-serverProcessingCardException::~serverProcessingCardException() {}
+serverProcessingCardException::~serverProcessingCardException() = default;

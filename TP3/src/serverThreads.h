@@ -16,6 +16,8 @@ public:
     void addProcessClientThreadAndStart(commonSocket& sock,
                                         serverCardsData& cards,
                                     serverConnectionData &is_server_connected);
+    void addQuitThreadAndStart(serverConnectionData &is_server_connected,
+                               commonSocket &connection);
     void join();
     ~Threads();
 };
