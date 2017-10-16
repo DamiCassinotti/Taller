@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
     File output(stdout);
     Threads threads;
     std::list<BlockingString> inputs;
+    // Agrego un BlockingString nuevo a la lista
     inputs.emplace_back();
     Logger logger;
     std::map<std::string, int> processors_type_count = {{ECHO_NAME, 0},
@@ -33,24 +34,30 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         std::string param(argv[i]);
         if (param == INPUT_NAME) {
+            // Si tengo el parámetro '--input', cambio el archivo de entrada
             std::ifstream f(argv[i + 1]);
             if (!f.good())
                 return ERROR;
             input.changeFile(argv[i + 1], "r");
         } else if (param == OUTPUT_NAME) {
+            // Si tengo el parámetro '--output', cambio el archivo de salida
             output.changeFile(argv[i + 1], "w");
         } else if (param == DEBUG_NAME) {
+            // Si tengo el parámetro 'debug', el logger debe guardar las salidas
             logger.setShouldLog(true);
         } else if (param == ECHO_NAME) {
+            // Genero un comando echo
             processors_type_count[ECHO_NAME]++;
             std::string echoname(ECHO_NAME +
                          std::to_string(processors_type_count[ECHO_NAME]));
             BlockingString& last_input = inputs.back();
             inputs.emplace_back();
             threads.addEchoThread(echoname, last_input, inputs.back(), logger);
+            // Si luego no está el separador de comandos, salgo
             if (i + 1 < argc && std::string(argv[i + 1]) != "::")
                 return ERROR;
         } else if (param == MATCH_NAME) {
+            // Genero un comando match
             processors_type_count[MATCH_NAME]++;
             std::string matchName(MATCH_NAME +
                          std::to_string(processors_type_count[MATCH_NAME]));
@@ -59,9 +66,11 @@ int main(int argc, char *argv[]) {
             inputs.emplace_back();
             threads.addMatchThread(matchName, last_input, inputs.back(),
                                       reg, logger);
+            // Si luego no está el separador de comandos, salgo
             if (i + 2 < argc && std::string(argv[i + 2]) != "::")
                 return ERROR;
         } else if (param == REPLACE_NAME) {
+            // Genero un comando replace
             processors_type_count[REPLACE_NAME]++;
             std::string replaceName(REPLACE_NAME +
                         std::to_string(processors_type_count[REPLACE_NAME]));
@@ -71,10 +80,12 @@ int main(int argc, char *argv[]) {
             inputs.emplace_back();
             threads.addReplaceThread(replaceName, last_input, inputs.back(),
                                         reg, replacement, logger);
+            // Si luego no está el separador de comandos, salgo
             if (i + 3 < argc && std::string(argv[i + 3]) != "::")
                 return ERROR;
         }
     }
+    // Agrego los thread de lectura y escritura
     threads.addReaderThread(input, inputs.front());
     threads.addWriterThread(output, inputs.back());
     threads.start();

@@ -6,6 +6,7 @@
 #include "LineProcessor.h"
 #include "BlockingString.h"
 
+// Modelo para el comando replace
 class ReplaceProcessor : public LineProcessor {
 private:
     std::regex rgx;

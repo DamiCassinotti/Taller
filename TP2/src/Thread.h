@@ -3,6 +3,7 @@
 
 #include <thread>
 
+// Clase abstracta para generalizar los threads
 class Thread {
 private:
     std::thread thread;

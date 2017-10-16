@@ -7,6 +7,7 @@
 #include "Logger.h"
 #include "BlockingString.h"
 
+// Clase que generaliza los comandos para procesamiento de lineas
 class LineProcessor : public Thread {
 protected:
     std::string name;

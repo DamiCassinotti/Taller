@@ -5,6 +5,7 @@
 #include <string>
 #include "LineProcessor.h"
 
+// Modelo para el comando match
 class MatchProcessor : public LineProcessor {
 private:
     std::regex rgx;

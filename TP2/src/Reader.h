@@ -6,6 +6,7 @@
 #include "BlockingString.h"
 #include "File.h"
 
+// Thread para lectura de archivo
 class Reader : public Thread {
 private:
     File &file;

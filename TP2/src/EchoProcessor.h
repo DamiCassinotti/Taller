@@ -5,6 +5,7 @@
 #include "LineProcessor.h"
 #include "BlockingString.h"
 
+// Modelo para el comando 'echo'
 class EchoProcessor: public LineProcessor {
 public:
     EchoProcessor(std::string name, BlockingString &input,

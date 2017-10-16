@@ -6,6 +6,7 @@
 #include "File.h"
 #include "BlockingString.h"
 
+// Thread para escritura en archivo
 class Writer : public Thread {
 private:
     File &file;
